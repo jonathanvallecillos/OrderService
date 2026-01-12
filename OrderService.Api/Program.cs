@@ -13,7 +13,10 @@ builder.Services.AddControllers();
 
 // EF
 builder.Services.AddDbContext<OrderDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Default"),
+        sql => sql.EnableRetryOnFailure()
+    )
 );
 
 // UseCases
@@ -24,6 +27,10 @@ builder.Services.AddScoped<GetOrderByIdUseCase>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 var app = builder.Build();
+
+// 👇 aplicar migraciones automáticamente
+app.Services.ApplyMigrations();
+
 app.MapControllers();
 
 // Configure the HTTP request pipeline.
